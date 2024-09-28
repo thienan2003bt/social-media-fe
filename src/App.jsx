@@ -1,10 +1,12 @@
 import { Container } from "@chakra-ui/react"
 import { Route, Routes } from "react-router-dom"
 import UserPage from "./pages/UserPage"
+import Header from "./components/Header"
 
 function App() {
   return (
-    <Container maxW="620px">
+    <Container w={"48vw"} maxW={"48vw"} marginX={"26vw"}>
+		<Header/>
 		<Routes>
 			<Route path='/:username' element={<UserPage />}/>
 			<Route path='/:username/post/:pid' element={<UserPage />}/>

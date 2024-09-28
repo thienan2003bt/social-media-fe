@@ -1,10 +1,9 @@
-import { Button } from '@chakra-ui/react';
+import UserHeader from '../components/user/UserHeader';
 
 function UserPage() {
     return (
         <div>
-            <h1>Hello there!</h1>     	
-            <Button>Click me please</Button>
+            <UserHeader />
         </div>
     );
 }
