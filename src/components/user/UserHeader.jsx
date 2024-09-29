@@ -40,7 +40,10 @@ function UserHeader() {
 
                 <Box>
                     <Avatar name="Mark Zuckerberg"
-                        src="/zuck-avatar.png" size={"xl"}
+                        src="/zuck-avatar.png" size={{
+                            base: "md",
+                            md: "xl"
+                        }}
                     />
                 </Box>
 
