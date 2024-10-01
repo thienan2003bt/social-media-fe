@@ -3,11 +3,13 @@ import UserHeader from '../components/user/UserHeader';
 import UserPost from '../components/user/UserPost';
 import { useParams } from 'react-router-dom';
 import useShowToast from '../hooks/useShowToast';
+import { Flex, Spinner } from '@chakra-ui/react';
 
 function UserPage() {
     const [user, setUser] = useState({});
     const { username } = useParams();
     const showToast = useShowToast();
+    const [isLoading, setIsLoading] = useState(true);
 
     const getUser = async () => {
         try {
@@ -19,6 +21,8 @@ function UserPage() {
             setUser(data.data);
         } catch (error) {
             showToast("Error getting user's profile", error.message, "error");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -26,12 +30,22 @@ function UserPage() {
         getUser();
     }, [username])
     return (
-        <div>
-            <UserHeader userData={user} />
-            <UserPost likes={132} replies={465} postImg={"/post1.png"} postTitle={"It's my first ever post on Threads."}/>
-            <UserPost likes={798} replies={301} postImg={"/post2.png"} postTitle={"It's my first ever post on Threads."}/>
-            <UserPost likes={132} replies={465} postImg={"/post3.png"} postTitle={"It's my first ever post on Threads."}/>
-        </div>
+        <>
+            {!user && <h1>User not found.</h1>}
+            {!user && isLoading === true &&
+                <Flex justifyContent={"center"}>
+                    <Spinner size={"lg"} />
+                </Flex>
+            }
+            {user && 
+                <div>
+                    <UserHeader userData={user} />
+                    <UserPost likes={132} replies={465} postImg={"/post1.png"} postTitle={"It's my first ever post on Threads."}/>
+                    <UserPost likes={798} replies={301} postImg={"/post2.png"} postTitle={"It's my first ever post on Threads."}/>
+                    <UserPost likes={132} replies={465} postImg={"/post3.png"} postTitle={"It's my first ever post on Threads."}/>
+                </div>
+            }
+        </>
     );
 }
 

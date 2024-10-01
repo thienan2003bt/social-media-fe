@@ -20,7 +20,7 @@ function usePreviewImage() {
             return showToast("Invalid image type!", "Please select an image file", "error")
         }
     }
-    return {handleImageChange, imageUrl};
+    return {handleImageChange, imageUrl, setImageUrl};
 }
 
 export default usePreviewImage;
