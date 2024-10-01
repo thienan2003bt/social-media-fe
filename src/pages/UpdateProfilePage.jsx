@@ -21,6 +21,7 @@ import useShowToast from '../hooks/useShowToast';
 export default function UpdateProfilePage() {
     const [user, setUser] = useRecoilState(userAtom);
     const showToast = useShowToast();
+    const [isLoading, setIsLoading] = useState(false);
 
     const [inputs, setInputs] = useState({
         name: user?.name ?? '', 
@@ -36,8 +37,9 @@ export default function UpdateProfilePage() {
 
     const handleSubmit = async (e) => {
       e.preventDefault();
+      setIsLoading(true);
+
       try {
-        alert("Press submit!")
         const response = await fetch(`http://localhost:5000/users/update/${user._id}`, {
           method: 'PATCH',
           headers: { 
@@ -49,7 +51,6 @@ export default function UpdateProfilePage() {
 
         let data = await response.json();
         if(data.data) {
-          console.log("Data: " + JSON.stringify(data.data));
           setUser(data?.data ?? user);
           localStorage.setItem("user-threads", JSON.stringify(data.data));
           showToast("Update user's profile", data.message, "success");
@@ -58,6 +59,8 @@ export default function UpdateProfilePage() {
         }
       } catch (error) {
         showToast("Submit user's profile error", error.message, 'error')
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -163,7 +166,9 @@ export default function UpdateProfilePage() {
                 w="full"
                 _hover={{
                   bg: 'green.500',
-                }}>
+                }}
+                isLoading={isLoading}
+                >
                 Submit
               </Button>
             </Stack>

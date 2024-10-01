@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
@@ -31,7 +31,7 @@ const colors = {
 const theme = extendTheme({ config, styles, colors });
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+//   <StrictMode>
 	<BrowserRouter>
 		<ChakraProvider theme={theme}>
 			<ColorModeScript initialColorMode={theme.config.initialColorMode}/>
@@ -42,5 +42,5 @@ createRoot(document.getElementById('root')).render(
 
 		</ChakraProvider>
 	</BrowserRouter>
-  </StrictMode>,
+//   </StrictMode>,
 )
