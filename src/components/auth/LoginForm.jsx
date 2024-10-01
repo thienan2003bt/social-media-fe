@@ -47,6 +47,7 @@ export default function LoginForm() {
         } else {
           localStorage.setItem("user-threads", JSON.stringify(data));
           setUser(data);
+          document.cookie = `jwt=${data?.jwt ?? ''}`
           navigate('/');
         }
       } catch (error) {
