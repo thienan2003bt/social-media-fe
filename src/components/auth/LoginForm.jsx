@@ -24,6 +24,8 @@ import { useNavigate } from 'react-router-dom'
 export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [inputs, setInputs] = useState({username: '', password: ''})
+    const [isLoading, setIsLoading] = useState(false);
+    
     const navigate = useNavigate();
     
     const setUser = useSetRecoilState(userAtom);
@@ -32,6 +34,7 @@ export default function LoginForm() {
 
 
     const handleLogin = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch('http://localhost:5000/users/login', {
           method: 'POST',
@@ -52,8 +55,12 @@ export default function LoginForm() {
         }
       } catch (error) {
         showToast("Error logging in", error.message, "error");
+      } finally {
+        setIsLoading(false);
       }
     }
+
+
     return (
       <Flex
         minH={'80vh'}
@@ -100,7 +107,7 @@ export default function LoginForm() {
               </FormControl>
               <Stack spacing={10} pt={2}>
                 <Button
-                  loadingText="Submitting"
+                  loadingText="Logging in"
                   size="lg"
                   bg={useColorModeValue("gray.600", "gray.700")}
                   color={'white'}
@@ -108,6 +115,7 @@ export default function LoginForm() {
                     bg: useColorModeValue("gray.700", "gray.800"),
                   }}
                   onClick={() => handleLogin()}
+                  isLoading={isLoading}
                   >
                   Login
                 </Button>
