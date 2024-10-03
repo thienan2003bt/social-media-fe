@@ -5,6 +5,7 @@ import PostActions from "../post/PostActions";
 import { useEffect, useState } from "react";
 import useShowToast from "../../hooks/useShowToast";
 import { formatDistanceToNow } from 'date-fns'
+import { DeleteIcon } from "@chakra-ui/icons";
 
 function FeedPost({ post, postedBy }) {
     const [user, setUser] = useState({});
@@ -24,10 +25,18 @@ function FeedPost({ post, postedBy }) {
             if(data.error) {
                 return showToast("Get Post Owner API Error", data.error, "error");
             }
+            console.log("Post: ");
+            console.log(post);
             setUser(data.data);
         } catch (error) {
             showToast("Get Post Owner Error", error, "error");
         }
+    }
+
+    const handleNavigateToReplierPage= (e, replier) => {
+        e.preventDefault();
+
+        navigate(`/${replier?.username}`)
     }
 
     useEffect(() => {
@@ -45,11 +54,12 @@ function FeedPost({ post, postedBy }) {
                         onClick={(e) => handleNavigateToOwnerPage(e)}/>
                         <Box w={"1px"} h={"full"} bg={"gray.light"} my={2}></Box>
                         <Box position={"relative"} w={"full"}>
-                            {post?.replies?.slice(0, 4)?.map((replier) => {
-                                <Avatar size={"xs"} name={"Dan Abramov"} src={replier?.userProfilePic ?? "https://bit.ly/dan-abramov"} position={"absolute"} 
-                                top={"0px"} left={"15px"} padding={"2px"}
+                            {post?.replies?.slice(0, 4)?.map((replier, id) => {
+                                return <Avatar key={`replier-${id}`} size={"xs"} name={"Dan Abramov"} src={replier?.userProfilePic || "https://bit.ly/dan-abramov"} position={"absolute"} 
+                                top={"0px"} left={"15px"} padding={"2px"} onClick={(e) => handleNavigateToReplierPage(e, replier)}
                             />
                             })}
+
 
                             {!post?.replies?.length && <Text size={"sm"} textAlign={"center"}>😕</Text>}
                         </Box>
@@ -69,6 +79,7 @@ function FeedPost({ post, postedBy }) {
                             <Flex gap={"4"} alignItems={"center"}>
                                 <Text fontSize={"xs"} width={16} textAlign={"right"} color={"gray.light"}>{formatDistanceToNow(new Date(post?.createdAt)) ?? '1d'} ago</Text>
                                 <BsThreeDots />
+                                {/* <DeleteIcon /> */}
                             </Flex>
                         </Flex>
 
