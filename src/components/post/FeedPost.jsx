@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PostActions from "../post/PostActions";
 import { useEffect, useState } from "react";
 import useShowToast from "../../hooks/useShowToast";
+import { formatDistanceToNow } from 'date-fns'
 
 function FeedPost({ post, postedBy }) {
     const [liked, setLiked] = useState(false);
@@ -83,7 +84,7 @@ function FeedPost({ post, postedBy }) {
                             </Flex>
 
                             <Flex gap={"4"} alignItems={"center"}>
-                                <Text fontSize={"sm"} color={"gray.light"}>1d</Text>
+                                <Text fontSize={"xs"} width={16} textAlign={"right"} color={"gray.light"}>{formatDistanceToNow(new Date(post?.createdAt)) ?? '1d'} ago</Text>
                                 <BsThreeDots />
                             </Flex>
                         </Flex>
