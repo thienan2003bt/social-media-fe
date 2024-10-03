@@ -7,9 +7,7 @@ import useShowToast from "../../hooks/useShowToast";
 import { formatDistanceToNow } from 'date-fns'
 
 function FeedPost({ post, postedBy }) {
-    const [liked, setLiked] = useState(false);
     const [user, setUser] = useState({});
-    const [isLoading, setIsLoading] = useState(false);
 
     const showToast = useShowToast();
     const navigate = useNavigate();
@@ -20,20 +18,15 @@ function FeedPost({ post, postedBy }) {
     }
 
     const getUser = async () => {
-        setIsLoading(true);
         try {
             const response = await fetch(`http://localhost:5000/users/profile/${postedBy}`);
             let data = await response.json();
             if(data.error) {
                 return showToast("Get Post Owner API Error", data.error, "error");
             }
-            console.log("Post owner: ");
-            console.log(data.data);
             setUser(data.data);
         } catch (error) {
             showToast("Get Post Owner Error", error, "error");
-        } finally {
-            setIsLoading(false);
         }
     }
 
@@ -59,16 +52,6 @@ function FeedPost({ post, postedBy }) {
                             })}
 
                             {!post?.replies?.length && <Text size={"sm"} textAlign={"center"}>😕</Text>}
-                            
-                            {/* <Avatar size={"xs"} name={"Dan Abramov"} src={"https://bit.ly/dan-abramov"} position={"absolute"} 
-                                top={"0px"} left={"15px"} padding={"2px"}
-                            />
-                            <Avatar size={"xs"} name={"Segun Adebayo"} src={"https://bit.ly/sage-adebayo"} position={"absolute"} 
-                                bottom={"0px"} right={"-5px"} padding={"2px"}
-                            />
-                            <Avatar size={"xs"} name={"Prosper Otemuyiwa"} src={"https://bit.ly/prosper-baba"} position={"absolute"} 
-                                bottom={"0px"} left={"5px"} padding={"2px"}
-                            /> */}
                         </Box>
                     </Flex>
 
@@ -97,15 +80,9 @@ function FeedPost({ post, postedBy }) {
                         }
 
                         <Flex gap={"3"} my={"1"}>
-                            <PostActions liked={liked} setLiked={setLiked}/>
+                            <PostActions post={post}/>
                         </Flex>
 
-                        <Flex gap={"2"} alignItems={"center"}>
-                            <Text color={"gray.light"} fontSize={"sm"}>{post?.replies?.length} replies</Text>
-                            <Box w={"0.5"} h="0.5" borderRadius={"full"} bg={"gray.light"}></Box>
-                            <Text fontSize={"sm"} color={"gray.light"}>{post?.likes?.length} likes</Text>
-                            
-                        </Flex>
                     </Flex>
                 </Flex>
             </Link>
