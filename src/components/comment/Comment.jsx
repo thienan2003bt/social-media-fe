@@ -19,7 +19,7 @@ function Comment({ comment, createdAt, likes, username, userAvatar }) {
                 </Flex>
 
                 <Text>{comment}</Text>
-                <PostActions liked={liked} setLiked={setLiked}/>
+                <PostActions liked={liked} setLiked={setLiked} post={{}}/>
                 <Text fontSize={"sm"} color={"gray.light"}>{likes + (liked === true ? 1 : 0)} likes</Text>
             </Flex>
         </Flex>

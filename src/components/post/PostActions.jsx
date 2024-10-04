@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import userAtom from '../../atoms/userAtom';
 import useShowToast from "../../hooks/useShowToast";
@@ -91,6 +91,11 @@ const PostActions = ({ post: _post }) => {
 		}
 		onClose();
 	};	
+
+
+	useEffect(() => {
+		setPost(_post);
+	}, [_post])
 
 
 

@@ -1,14 +1,16 @@
 import { Avatar, Box, Flex, Image, Text } from "@chakra-ui/react";
-import { BsThreeDots } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import PostActions from "../post/PostActions";
 import { useEffect, useState } from "react";
 import useShowToast from "../../hooks/useShowToast";
 import { formatDistanceToNow } from 'date-fns'
 import { DeleteIcon } from "@chakra-ui/icons";
+import { useRecoilValue } from "recoil";
+import userAtom from "../../atoms/userAtom";
 
 function FeedPost({ post, postedBy }) {
     const [user, setUser] = useState({});
+    const currentUser = useRecoilValue(userAtom);
 
     const showToast = useShowToast();
     const navigate = useNavigate();
@@ -31,6 +33,31 @@ function FeedPost({ post, postedBy }) {
         } catch (error) {
             showToast("Get Post Owner Error", error, "error");
         }
+    }
+
+
+    const handleDeletePost = async (e) => {
+        e.preventDefault();
+        if(window.confirm("Are you sure you want to delete this post? You cannot undo this") === false) {
+            return;
+        }
+        try {
+
+            const response = await fetch(`http://localhost:5000/posts/delete/${post?._id}`, {
+                method: "DELETE",
+                credentials: "include",
+                headers: { 'Content-Type': 'application/json' }
+            })
+
+            const data = await response.json();
+            if(data.error) {
+                return showToast("Delete Post API Error",data.error, "error");
+            }
+
+            showToast("Delete Post Success", data.message, "success");
+        } catch (error) {
+            showToast("Delete Post Error", error.message, "error");
+        } 
     }
 
     const handleNavigateToReplierPage= (e, replier) => {
@@ -78,8 +105,12 @@ function FeedPost({ post, postedBy }) {
 
                             <Flex gap={"4"} alignItems={"center"}>
                                 <Text fontSize={"xs"} width={16} textAlign={"right"} color={"gray.light"}>{formatDistanceToNow(new Date(post?.createdAt)) ?? '1d'} ago</Text>
-                                <BsThreeDots />
-                                {/* <DeleteIcon /> */}
+                                {/* <BsThreeDots /> */}
+
+                                {currentUser?._id === user?._id && 
+                                    <DeleteIcon size={20} onClick={(e) => handleDeletePost(e)} />
+                                }
+                                
                             </Flex>
                         </Flex>
 
