@@ -48,6 +48,7 @@ function HomePage() {
 
             {isLoading === false && posts?.length > 0 && 
                 posts?.map((post, index) => {
+                    console.log("Feed post: " + index);
                     return <FeedPost key={`feedpost-${index}`} postedBy={post?.postedBy} post={post}/>
                 })
             }

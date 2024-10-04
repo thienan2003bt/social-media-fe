@@ -20,20 +20,7 @@ function FeedPost({ post, postedBy }) {
         navigate(`/${user?.username}`)
     }
 
-    const getUser = async () => {
-        try {
-            const response = await fetch(`http://localhost:5000/users/profile/${postedBy}`);
-            let data = await response.json();
-            if(data.error) {
-                return showToast("Get Post Owner API Error", data.error, "error");
-            }
-            console.log("Post: ");
-            console.log(post);
-            setUser(data.data);
-        } catch (error) {
-            showToast("Get Post Owner Error", error, "error");
-        }
-    }
+
 
 
     const handleDeletePost = async (e) => {
@@ -60,15 +47,34 @@ function FeedPost({ post, postedBy }) {
         } 
     }
 
-    const handleNavigateToReplierPage= (e, replier) => {
+    const handleNavigateToReplierPage = (e, replier) => {
         e.preventDefault();
 
         navigate(`/${replier?.username}`)
     }
 
     useEffect(() => {
+        const getUser = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/users/profile/${postedBy}`);
+                let data = await response.json();
+                if(data.error) {
+                    return showToast("Get Post Owner API Error", data.error, "error");
+                }
+                console.log("user: ");
+                console.log(data.data);
+                setUser(data.data);
+            } catch (error) {
+                showToast("Get Post Owner Error", error, "error");
+            }
+        }
+
         getUser();
-    }, []);
+    }, [postedBy]);
+
+    if(!user) {
+        return null;
+    }
 
     return (
 
