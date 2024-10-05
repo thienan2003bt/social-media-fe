@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import useShowToast from "../../hooks/useShowToast";
 import { formatDistanceToNow } from 'date-fns'
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
+import postAtom from "../../atoms/postAtom";
 
 function FeedPost({ post, postedBy }) {
+    const setPosts = useSetRecoilState(postAtom)
     const [user, setUser] = useState({});
     const currentUser = useRecoilValue(userAtom);
 
@@ -19,8 +21,6 @@ function FeedPost({ post, postedBy }) {
         e.preventDefault();
         navigate(`/${user?.username}`)
     }
-
-
 
 
     const handleDeletePost = async (e) => {
@@ -41,6 +41,7 @@ function FeedPost({ post, postedBy }) {
                 return showToast("Delete Post API Error",data.error, "error");
             }
 
+            setPosts((previous) => previous.filter(p => p?._id !== post?._id))
             showToast("Delete Post Success", data.message, "success");
         } catch (error) {
             showToast("Delete Post Error", error.message, "error");

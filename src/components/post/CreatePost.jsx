@@ -4,8 +4,9 @@ import { useRef, useState } from "react";
 import usePreviewImage from "../../hooks/usePreviewImage";
 import { BsFillImageFill } from "react-icons/bs";
 import useShowToast from "../../hooks/useShowToast";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
+import postAtom from "../../atoms/postAtom";
 
 const MAX_CHARACTER = 500;
 
@@ -19,7 +20,7 @@ function CreatePost() {
     const [postText, setPostText] = useState('');
     const [remainingChars, setRemainingChars] = useState(MAX_CHARACTER);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [posts, setPosts] = useRecoilState(postAtom);
 
 
     const handleTextChange = (e) => {
@@ -63,6 +64,8 @@ function CreatePost() {
                 showToast("Error creating new post", data.message, "error")
             } else {
                 showToast("Create new post", data.message, "success");
+                setPosts([data.data, ...posts])
+
                 onClose();
                 resetModal();
             }
@@ -77,10 +80,11 @@ function CreatePost() {
 
     return (
         <>
-            <Button position={"fixed"} bottom={"10px"} right={"10px"} leftIcon={<AddIcon />} bg={useColorModeValue("gray.500", "gray.dark")}
-                onClick={onOpen}
+            <Button position={"fixed"} bottom={"10"} right={"5"}  size={{ base: "sm", sm: "md"}}
+                bg={useColorModeValue("gray.500", "gray.dark")}
+                onClick={onOpen} title="Create post"
             >
-                Post
+                <AddIcon />
             </Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>

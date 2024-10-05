@@ -1,16 +1,18 @@
 import { Box, Button, Flex, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from '../../atoms/userAtom';
 import useShowToast from "../../hooks/useShowToast";
+import postAtom from "../../atoms/postAtom";
 
 const PostActions = ({ post: _post }) => {
 	const user = useRecoilValue(userAtom);
 	const showToast = useShowToast();
+	const [posts, setPosts] = useRecoilState(postAtom);
 	const { isOpen, onClose, onOpen } = useDisclosure();
 	
 	const [post, setPost] = useState(_post);
-	const [liked, setLiked] = useState(post?.likes?.includes(user?._id) ?? false);
+	const [liked, setLiked] = useState(false);
 	const [isLiking, setIsLiking] = useState(false);
 
 	const [replyText, setReplyText] = useState("");
@@ -37,12 +39,29 @@ const PostActions = ({ post: _post }) => {
 				return showToast("Toggle like button error", data.error, "error")
 			}
 			if(liked) {
+				const updatedPost = posts.map(p => {
+					if(p._id === post._id) {
+						return { 
+							...p, 
+							likes: post.likes.filter(p => p !== user?._id)
+						};
+					}
+				});
+
+				setPosts(updatedPost)
 				setPost({ 
 					...post, 
 					likes: post.likes.filter(p => p !== user?._id),
 				});
 				showToast("Unlike post", "Unlike post successfully!", "success");
 			} else {
+				const updatedPost = posts.map(p => {
+					if(p._id === post._id) {
+						return { ...p, likes: [ ...p.likes, user._id]};
+					}
+				});
+
+				setPosts(updatedPost)
 				setPost({ 
 					...post, 
 					likes: [ ...post.likes, user?._id ]
@@ -82,6 +101,15 @@ const PostActions = ({ post: _post }) => {
 			} 
 
 			setPost(data.data);
+			const updatedPosts = posts.map(p => {
+				if(p._id === post._id) {
+					return { 
+						...p, 
+						replies: data.data.replies ?? p.replies
+					}
+				}
+			})
+			setPosts(updatedPosts)
 			setReplyText("");
 			showToast("Create reply success", "New reply created successfully!", "success")
 		} catch (error) {
@@ -94,8 +122,9 @@ const PostActions = ({ post: _post }) => {
 
 
 	useEffect(() => {
+		setLiked(_post?.likes?.includes(user._id) ?? false);
 		setPost(_post);
-	}, [_post])
+	}, [_post, user])
 
 
 

@@ -2,11 +2,13 @@ import { Flex, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import FeedPost from "../components/post/FeedPost";
+import { useRecoilState } from "recoil";
+import postAtom from "../atoms/postAtom";
 
 function HomePage() {
     const showToast = useShowToast();
 
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useRecoilState(postAtom);
     const [isLoading, setIsLoading] = useState(false);
 
     const getFeedPosts = async () => {

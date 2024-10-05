@@ -6,9 +6,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { formatDistanceToNow } from 'date-fns';
+import postAtom from "../atoms/postAtom";
 
 function PostPage() {
     const showToast = useShowToast();
@@ -17,7 +18,7 @@ function PostPage() {
     const { user, isLoading }= useGetUserProfile();
 
     const navigate = useNavigate();
-
+    const [posts, setPosts] = useRecoilState(postAtom);
     const [post, setPost] = useState({});
 
     const handleDeletePost = async (e) => {
@@ -61,6 +62,7 @@ function PostPage() {
                     console.log("Post info: ");
                     console.log(data.data);
                     setPost(data.data);
+                    setPosts([data.data])
                 }
             } catch (error) {
                 showToast("Get post info error", error.message, "error")
@@ -68,6 +70,10 @@ function PostPage() {
         }
         getPost();
     }, [pid])
+
+    useEffect(() => {
+        setPost(posts[0]);
+    }, [posts])
 
     if(isLoading === true && !user) {
         return (<Flex>
@@ -128,10 +134,10 @@ function PostPage() {
         <Divider my={"4"}/>
         
         {post?.replies?.length > 0 && post?.replies?.map((reply, id) => {
-            return <Comment key={`reply-${id}`} reply={reply }comment={reply?.text} createdAt={post?.createdAt}
-            likes={0}
-            username={reply?.postedBy}
-            userAvatar={reply?.userProfilePic} />
+            return <Flex key={`reply-${id}`}>
+                <Comment reply={reply} />
+                <Divider hidden={reply._id === post.replies[post.replies.length - 1]._id} my={"1"}/>
+            </Flex>
         })}
         
     </>);

@@ -31,7 +31,7 @@ function LogoutButton() {
     }
 
     return (
-        <Button position={"fixed"} top={"30px"} right={"30px"} size={"sm"}
+        <Button size={"sm"}
             onClick={() => handleLogout()}
         >
             <FiLogOut />
