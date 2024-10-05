@@ -6,6 +6,7 @@ import { AiFillHome } from 'react-icons/ai';
 import { RxAvatar } from 'react-icons/rx';
 import LogoutButton from './LogoutButton';
 import authScreenAtom from '../atoms/authAtom';
+import { BsFillChatQuoteFill } from 'react-icons/bs';
 
 function Header() {
     const {colorMode, toggleColorMode} = useColorMode();
@@ -35,6 +36,9 @@ function Header() {
                     <RxAvatar size={20}/>
                 </Link>
 
+                <Link as={RouterLink} to={`/chat`}>
+                    <BsFillChatQuoteFill size={20}/>
+                </Link>
                 <LogoutButton />
             </Flex>
             : <Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("signup")}>
