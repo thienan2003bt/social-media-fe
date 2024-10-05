@@ -7,12 +7,16 @@ import useShowToast from '../hooks/useShowToast';
 import { useRecoilState, useRecoilValue } from "recoil";
 import { conversationAtom, selectedConversationAtom } from '../atoms/messageAtom';
 import { GiConversation } from "react-icons/gi";
+import userAtom from "../atoms/userAtom";
 
 function ChatPage() {
     const [loadingConversation, setLoadingConversation] = useState(false);
     const [conversations, setConversations] = useRecoilState(conversationAtom);
+    const [searchText, setSearchText] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
 
-    const  selectedConversation = useRecoilValue(selectedConversationAtom);
+    const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom);
+    const currentUser = useRecoilValue(userAtom);
 
     const showToast = useShowToast();
 
@@ -40,9 +44,49 @@ function ChatPage() {
     }
 
 
+    const handleSearchConversation = async (e) => {
+        e.preventDefault();
+        if(!searchText || !currentUser._id) {
+            return;
+        }
+        setIsSearching(true);
+        try {
+            const response = await fetch(`http://localhost:5000/users/profile/${searchText}`, {
+                method: "GET",
+            })
+            const data = await response.json();
+            if(data.error) {
+                return showToast("API Error searching conversations", data.error, "error");
+            }
+
+            const searchedUser = data.data;
+            
+            const isSearchingYourself = searchedUser?._id === currentUser._id;
+            if(isSearchingYourself === true) {
+                return showToast("Error searching conversations", "You cannot message yourself", "error");
+            }
+            
+            const searchedConversation = conversations.find(con => con.participants.filter(u => u._id === searchedUser._id));
+            if(searchedConversation._id) {
+                setSelectedConversation({
+                    _id: searchedConversation._id,
+                    userId: searchedUser._id,
+                    username: searchedUser.username,
+                    userProfilePic: searchedUser.profilePic
+                })
+                showToast("Conversation success", "Search conversation successfully", "success");
+            } else {
+                return showToast("Error searching conversations", "No conversation found with this user!", "error");
+            }
+        } catch (error) {
+            showToast("Error searching conversations", error.message, "error");
+        } finally {
+            setIsSearching(false);
+        }
+    }
+
+
     useEffect(() => {
-        console.log("Selected Conversation: ");
-        console.log(selectedConversation);
         getConversations();
     }, [])
 
@@ -59,10 +103,14 @@ function ChatPage() {
                     <Text fontWeight={"700"} color={useColorModeValue("gray.600, gray.400")}>
                         Conversation
                     </Text>
-                    <form>
+                    <form onSubmit={handleSearchConversation}>
                         <Flex alignItems={"center"} gap={2}>
-                            <Input placeholder="Search for a user" />
-                            <Button size={"sm"}>
+                            <Input placeholder="Search for a user"
+                                value={searchText} onChange={(e) => setSearchText(e.target.value)}
+                            />
+                            <Button size={"sm"} onClick={handleSearchConversation}
+                                isLoading={isSearching}
+                            >
                                 <SearchIcon size={20}/>
                             </Button>
                         </Flex>
@@ -92,7 +140,7 @@ function ChatPage() {
                     )}
                 </Flex>
 
-                {selectedConversation?._id !== ''
+                {selectedConversation?._id === ''
                     ? <Flex flex={70} borderRadius={"md"} p={2} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} height={"400px"}>
                         <GiConversation size={100}/>
                         <Text fontSize={"20"}>Select a conversation to start messaging</Text>

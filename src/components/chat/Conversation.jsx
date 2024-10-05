@@ -28,7 +28,10 @@ function Conversation({ conversation }) {
     useEffect(() => {
         if(selectedConversation?._id === conversation._id) {
             setBgColorForSelectedConversation(colorMode);
+        } else {
+            setBgColorForSelectedConversation(colorMode === 'light' ? "gray.600" : "gray.dark");
         }
+
     }, [selectedConversation, colorMode, conversation])
 
 
