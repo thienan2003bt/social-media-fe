@@ -13,6 +13,7 @@ function HomePage() {
 
     const getFeedPosts = async () => {
         setIsLoading(true);
+        setPosts([]);
         try {
             const response = await fetch("http://localhost:5000/posts/feeds", {
                 credentials: "include"

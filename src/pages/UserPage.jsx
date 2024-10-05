@@ -5,8 +5,10 @@ import useShowToast from '../hooks/useShowToast';
 import { Flex, Spinner } from '@chakra-ui/react';
 import FeedPost from '../components/post/FeedPost';
 import useGetUserProfile from '../hooks/useGetUserProfile';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import postAtom from '../atoms/postAtom';
+import CreatePost from '../components/post/CreatePost';
+import userAtom from '../atoms/userAtom';
 
 function UserPage() {
     const { username } = useParams();
@@ -16,6 +18,7 @@ function UserPage() {
     const [posts, setPosts] = useRecoilState(postAtom);
     const [isFetchingPosts, setIsFetchingPosts] = useState(false);
 
+    const currentUser = useRecoilValue(userAtom);
     
     useEffect(() => {
         const getPosts = async () => {
@@ -68,6 +71,8 @@ function UserPage() {
                     
                 </div> 
             }
+
+            {currentUser.username === username && <CreatePost />}
         </>
     );
 }
