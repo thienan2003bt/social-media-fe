@@ -12,7 +12,7 @@ function UserHeader({ userData }) {
     const showToast = useShowToast();
     const [user, setUser] = useState(userData);
     const currentUser = useRecoilValue(userAtom);
-    const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(currentUser?._id) ?? false);
+    const [isFollowing, setIsFollowing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
 
@@ -63,6 +63,11 @@ function UserHeader({ userData }) {
         setUser(userData);
     }, [userData])
 
+    useEffect(() => {
+        setIsFollowing(user?.followers?.includes(currentUser?._id) ?? false);
+    }, [user, currentUser])
+
+    
     return (
         <VStack gap={4} alignItems={"start"}>
             <Flex justifyContent={"space-between"} w={"full"}>

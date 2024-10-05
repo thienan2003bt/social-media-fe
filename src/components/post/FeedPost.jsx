@@ -22,6 +22,11 @@ function FeedPost({ post, postedBy }) {
         navigate(`/${user?.username}`)
     }
 
+    const formatTime = (time) => {
+        if(!time) return "Unknown";
+        return formatDistanceToNow(new Date(time));
+    }
+
 
     const handleDeletePost = async (e) => {
         e.preventDefault();
@@ -111,8 +116,7 @@ function FeedPost({ post, postedBy }) {
                             </Flex>
 
                             <Flex gap={"4"} alignItems={"center"}>
-                                <Text fontSize={"xs"} width={16} textAlign={"right"} color={"gray.light"}>{formatDistanceToNow(new Date(post?.createdAt)) ?? '1d'} ago</Text>
-                                {/* <BsThreeDots /> */}
+                                <Text fontSize={"xs"} width={16} textAlign={"right"} color={"gray.light"}>{formatTime(post?.createdAt)} ago</Text>
 
                                 {currentUser?._id === user?._id && 
                                     <DeleteIcon size={20} onClick={(e) => handleDeletePost(e)} />
@@ -121,7 +125,7 @@ function FeedPost({ post, postedBy }) {
                             </Flex>
                         </Flex>
 
-                        <Text fontSize={"sm"}>{post.text}</Text>
+                        <Text fontSize={"sm"}>{post?.text}</Text>
                         {post?.img &&  
                         <Box borderRadius={"6"} overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"}>
                             <Image src={post?.img} w={"full"} />

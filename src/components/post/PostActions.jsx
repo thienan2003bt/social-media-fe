@@ -40,7 +40,7 @@ const PostActions = ({ post: _post }) => {
 			}
 			if(liked) {
 				const updatedPost = posts.map(p => {
-					if(p._id === post._id) {
+					if(p?._id === post?._id) {
 						return { 
 							...p, 
 							likes: post.likes.filter(p => p !== user?._id)
@@ -56,7 +56,7 @@ const PostActions = ({ post: _post }) => {
 				showToast("Unlike post", "Unlike post successfully!", "success");
 			} else {
 				const updatedPost = posts.map(p => {
-					if(p._id === post._id) {
+					if(p?._id === post?._id) {
 						return { ...p, likes: [ ...p.likes, user._id]};
 					}
 				});
