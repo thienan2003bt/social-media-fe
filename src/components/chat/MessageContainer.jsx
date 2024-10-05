@@ -1,9 +1,11 @@
 import { Avatar, Divider, Flex, Image, Skeleton, SkeletonCircle, Text, useColorModeValue } from "@chakra-ui/react";
 import { useState } from "react";
+import Message from "./Message";
+import MessageInput from "./MessageInput";
 
 function MessageContainer() {
     const skeletonMessages = [1, 2, 3, 4, 5];
-    const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+    const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [messages, setMessages] = useState(skeletonMessages);
 
     return (
@@ -23,13 +25,13 @@ function MessageContainer() {
 
             <Divider />
 
-            <Flex flexDirection={"column"} gap={4}  my={4}
+            <Flex flexDirection={"column"} gap={4} p={2} my={4}
                 overflowY={"scroll"} minH={"60vh"}
             >
                 {messages?.map((msg, id) => {
                     return <Flex key={`message-${id}`} 
                         gap={2} alignItems={"center"} p={1}
-                        borderRadius={"md"} 
+                        borderRadius={"md"}
                         alignSelf={id % 2 === 0 ? "flex-start" : "flex-end"}
                     >
                         {isLoadingMessages === true
@@ -40,11 +42,16 @@ function MessageContainer() {
                             </Flex>
                             {id % 2 === 1 && <SkeletonCircle size={10}/>}
                         </>
-                        : <></>
+                        : <>
+                            <Message ownMessage={id % 2 === 0 ? false : true} />
+                        </>
                         }
                     </Flex>
                 })}
             </Flex>
+
+
+            <MessageInput />
         </Flex>
 
     );
