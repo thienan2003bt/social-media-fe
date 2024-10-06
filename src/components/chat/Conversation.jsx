@@ -5,7 +5,7 @@ import userAtom from '../../atoms/userAtom';
 import { BsCheck2All } from "react-icons/bs";
 import { selectedConversationAtom } from "../../atoms/messageAtom";
 
-function Conversation({ conversation }) {
+function Conversation({ conversation, isOnline }) {
     const currentUser = useRecoilValue(userAtom);
     const colorMode = useColorModeValue("gray.400", "gray.600");
 
@@ -65,7 +65,9 @@ function Conversation({ conversation }) {
             <WrapItem>
                 <Avatar size={{base: "xs", sm: "sm", md: "md"}} 
                 src={otherParticipant.profilePic}>
-                    <AvatarBadge boxSize={"1em"} bg={"green.500"}/>
+                    {isOnline ===  true && 
+                        <AvatarBadge boxSize={"1em"} bg={"green.500"}/>
+                    }
                 </Avatar>
 
             </WrapItem>

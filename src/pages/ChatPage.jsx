@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { conversationAtom, selectedConversationAtom } from '../atoms/messageAtom';
 import { GiConversation } from "react-icons/gi";
 import userAtom from "../atoms/userAtom";
+import { useSocket } from "../context/socketContext";
 
 function ChatPage() {
     const [loadingConversation, setLoadingConversation] = useState(false);
@@ -19,6 +20,7 @@ function ChatPage() {
     const currentUser = useRecoilValue(userAtom);
 
     const showToast = useShowToast();
+    const {socket, onlineUsers} = useSocket();
 
     const getConversations = async () => {
         setLoadingConversation(true);
@@ -43,6 +45,12 @@ function ChatPage() {
         }
     }
 
+    const getOnlineUserState = (conversation) => {
+        if(!conversation?.participants || conversation?.participants?.length <= 0) {
+            return false;
+        }
+        return onlineUsers?.includes(conversation?.participants[0]?._id ?? false);
+    }
 
     const handleSearchConversation = async (e) => {
         e.preventDefault();
@@ -132,7 +140,7 @@ function ChatPage() {
                             </>
                             // Real Message component
                             : <Flex w={"full"} flexDirection={"column"} gap={3}>
-                                <Conversation  conversation={conversation}/>
+                                <Conversation  conversation={conversation} isOnline={getOnlineUserState(conversation) }/>
                             </Flex>
                             }
                         </Flex>
