@@ -26,8 +26,8 @@ function MessageContainer() {
     useEffect(() => {
         socket.on("newMessage", (message) => {
             if(selectedConversation._id === message.conversationId) {
-                if(messages.findIndex(msg => msg._id === message._id) === -1) {
-                    setMessages((prev) => [...prev, message])
+                if(messages.findIndex(msg => msg._id && msg._id === message._id) === -1) {
+                    setMessages((prev) => [...prev, { ...message }])
                 }
             }
 
@@ -36,7 +36,10 @@ function MessageContainer() {
                     if(con._id === selectedConversation._id) {
                         return {
                             ...con,
-                            lastMessage: {text: message.text, sender: message.sender}
+                            lastMessage: {
+                                text: message.img ? "An image has been sent." : message.text, 
+                                sender: message.sender
+                            }
                         }
                     }
                     return con;
@@ -45,6 +48,10 @@ function MessageContainer() {
                 return updatedConversations;
             })
         })
+
+        return () => {
+            socket.off('newMessage')
+        }
     }, [socket])
 
     useEffect(() => {
@@ -69,6 +76,10 @@ function MessageContainer() {
                 })
             }
         })
+
+        return () => {
+            socket.off("messageSeen");
+        }
     }, [messages, currentUser, selectedConversation, socket])
 
 

@@ -1,9 +1,11 @@
-import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { useState } from "react";
+import { Flex, Image, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Spinner, useDisclosure } from "@chakra-ui/react";
+import { useRef, useState } from "react";
 import { IoSendSharp } from "react-icons/io5";
 import useShowToast from "../../hooks/useShowToast";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { conversationAtom, selectedConversationAtom } from "../../atoms/messageAtom";
+import { BsFillImageFill } from "react-icons/bs";
+import usePreviewImg from '../../hooks/usePreviewImage';
 
 function MessageInput({ setMessages }) {
     const [text, setText] = useState('');
@@ -11,18 +13,34 @@ function MessageInput({ setMessages }) {
     const [isSendingMessage, setIsSendingMessage] = useState(false);
     const selectedConversation = useRecoilValue(selectedConversationAtom);
     const setConversations = useSetRecoilState(conversationAtom);
+    
     const showToast = useShowToast();
+    const {handleImageChange, imageUrl, setImageUrl} = usePreviewImg();
+
+    const imageRef = useRef(null);
+
+    const {onClose}  = useDisclosure();
+
+
+    const handleCloseImageModal = () => {
+        onClose(); 
+        setImageUrl("");
+        if(imageRef.current && imageRef.current.value) {
+            imageRef.current.value = "";
+        }
+    }
 
 
     const handleRetrievingData = (data) => {
         setMessages((prev) => [...prev, data])
         setText("");
+        setImageUrl("");
 
         setConversations((prev) => {
             const updatedConversations = prev.map(con => {
                 if(con._id === selectedConversation._id) {
                     return { ...con, lastMessage: {
-                        text: text, 
+                        text: imageUrl ? "An image has been sent." : text, 
                         sender: data.sender
                     }}
                 }
@@ -35,7 +53,7 @@ function MessageInput({ setMessages }) {
 
     const handleSubmitMessage = async (e) => {
         e.preventDefault();
-        if(!text) {
+        if(!text && !imageUrl) {
             return;
         }
         setIsSendingMessage(true);
@@ -46,7 +64,8 @@ function MessageInput({ setMessages }) {
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     recipientId: selectedConversation?.userId,
-                    message: text
+                    message: text,
+                    img: imageUrl
                 })
             });
             const data = await response.json();
@@ -63,16 +82,51 @@ function MessageInput({ setMessages }) {
     }
 
     return (
-        <form onSubmit={handleSubmitMessage}>
-            <InputGroup>
-                <Input w={"full"} placeholder="Type a message" 
-                value={text} onChange={(e) => setText(e.target.value)}/>
-                
-                <InputRightElement _loading={isSendingMessage} onClick={handleSubmitMessage} cursor={"pointer"}>
-                    <IoSendSharp />
-                </InputRightElement>
-            </InputGroup>
-        </form>
+        <Flex gap={2} alignItems={"center"}> 
+            <Flex flex={5} cursor={"pointer"} >
+                <BsFillImageFill size={20} onClick={() => imageRef.current.click()}/>
+
+                <Input type="file" hidden ref={imageRef} onChange={handleImageChange}/>
+            </Flex>
+
+
+            <form onSubmit={handleSubmitMessage} style={{ flex: 95 }}>
+                <InputGroup>
+                    <Input w={"full"} placeholder="Type a message" 
+                    value={text} onChange={(e) => setText(e.target.value)}/>
+                    
+                    <InputRightElement _loading={isSendingMessage} onClick={handleSubmitMessage} cursor={"pointer"}>
+                        <IoSendSharp />
+                    </InputRightElement>
+                </InputGroup>
+            </form>
+
+            <Modal isOpen={imageUrl}
+                onClose={() => { handleCloseImageModal()}}
+            >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Send message with Image</ModalHeader>
+                    <ModalCloseButton />
+
+                    <ModalBody>
+                        <Flex mt={5} w={"full"}>
+                            <Image src={imageUrl} />
+                        </Flex>
+
+                        <Flex my={2} justifyContent={"flex-end"}>
+                            {isSendingMessage === false
+                                ?   <IoSendSharp size={24} cursor={"pointer"} 
+                                        onClick={handleSubmitMessage}
+                                    />
+                                :   <Spinner size={"md"}/>
+                            }
+                            
+                        </Flex>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        </Flex>
     );
 }
 
