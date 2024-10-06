@@ -22,28 +22,7 @@ function ChatPage() {
     const showToast = useShowToast();
     const {socket, onlineUsers} = useSocket();
 
-    const getConversations = async () => {
-        setLoadingConversation(true);
-        try {
-            const response = await fetch(`http://localhost:5000/messages/conversations`, {
-                method: "GET",
-                credentials: "include"
-            });
-            const data = await response.json();
 
-            if(data.error) {
-                return showToast("API Error getting conversations", data.error, "error")
-            }
-
-            console.log("Conversations: ");
-            console.log(data.data);
-            setConversations(data.data);
-        } catch (error) {
-            showToast("Error getting conversations", error.message, "error")
-        } finally {
-            setLoadingConversation(false);
-        }
-    }
 
     const getOnlineUserState = (conversation) => {
         if(!conversation?.participants || conversation?.participants?.length <= 0) {
@@ -95,6 +74,45 @@ function ChatPage() {
 
 
     useEffect(() => {
+        if(!socket) {
+            return;
+        }
+        socket.on("messageSeen", ({conversationId}) => {
+            setConversations(prev => {
+                const updatedConversations = prev.map(con => {
+                    if(con._id === conversationId) {
+                        return { ...con, lastMessage: {...con.lastMessage, seen: true}}
+                    }
+                    return con;
+                });
+                return updatedConversations;
+            })
+        })
+    }, [socket, setConversations])
+
+    useEffect(() => {
+        const getConversations = async () => {
+            setLoadingConversation(true);
+            try {
+                const response = await fetch(`http://localhost:5000/messages/conversations`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                const data = await response.json();
+    
+                if(data.error) {
+                    return showToast("API Error getting conversations", data.error, "error")
+                }
+    
+                console.log("Conversations: ");
+                console.log(data.data);
+                setConversations(data.data);
+            } catch (error) {
+                showToast("Error getting conversations", error.message, "error")
+            } finally {
+                setLoadingConversation(false);
+            }
+        }
         getConversations();
     }, [])
 

@@ -48,6 +48,31 @@ function MessageContainer() {
     }, [socket])
 
     useEffect(() => {
+        const isLastMessageFromOtherUser = messages?.length && messages[messages.length - 1]?.sender !== currentUser?._id;
+        if(isLastMessageFromOtherUser) {
+            socket.emit("markMessageAsSeen", {
+                conversationId: selectedConversation._id,
+                userId: selectedConversation.userId
+            })
+        }
+
+        socket.on("messageSeen", ({conversationId}) => {
+            if(selectedConversation._id === conversationId) {
+                setMessages(prev => {
+                    const updatedMessages = prev.map(msg => {
+                        if(msg.seen === false) {
+                            return {...msg, seen: true};
+                        }
+                        return msg;
+                    })
+                    return updatedMessages;
+                })
+            }
+        })
+    }, [messages, currentUser, selectedConversation, socket])
+
+
+    useEffect(() => {
         const getMessages = async () => {
             setIsLoadingMessages(true);
             setMessages(skeletonMessages);

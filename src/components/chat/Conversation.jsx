@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Flex, Image, Stack, Text, useColorModeValue, WrapItem } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, Box, Flex, Image, Stack, Text, useColorModeValue, WrapItem } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from '../../atoms/userAtom';
@@ -25,6 +25,10 @@ function Conversation({ conversation, isOnline }) {
         })
     }
 
+    const trimText = (text, size = 30) => {
+        return text?.length >= size ? text.slice(0, size) + " ..." : text;
+    }
+
     useEffect(() => {
         if(selectedConversation?._id === conversation._id) {
             setBgColorForSelectedConversation(colorMode);
@@ -37,13 +41,7 @@ function Conversation({ conversation, isOnline }) {
 
     useEffect(() => {
         const handleRetrievingData = () => {
-            const text = (conversation?.lastMessage?.text?.length >= 100) ? conversation?.lastMessage?.text?.slice(0, 101) : conversation?.lastMessage?.text;
-            const theLastMessage = {
-                sender: conversation?.lastMessage?.sender,
-                text: text
-            };
-            setLastMessage(theLastMessage);
-            
+            setLastMessage(conversation?.lastMessage)
             const otherParticipant = conversation?.participants?.filter(user => user._id !== currentUser._id)[0];
             setOtherParticipant(otherParticipant);
         }
@@ -78,12 +76,23 @@ function Conversation({ conversation, isOnline }) {
                     <Image src="/verified.png" w={4} h={4} ml={1} />
                 </Text>
                 
-                <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}
-                    fontWeight={lastMessage?.sender !== currentUser?._id ? "bold" : "500"}
-                >
-                    {currentUser._id === lastMessage?.sender && <BsCheck2All/>}
-                    {lastMessage?.text}
-                </Text>
+                {currentUser._id === lastMessage?.sender 
+                    ? <Flex alignItems={"center"} gap={2}>
+                        {lastMessage.seen === true  &&
+                            <Box color={"blue.400"}>
+                                <BsCheck2All size={16}/>
+                            </Box>
+                        }
+                        <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>
+                            {trimText(lastMessage?.text)}
+                        </Text>
+                    </Flex>   
+                    :   <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}
+                            fontWeight={lastMessage.seen === false ? "bold" : "400"}
+                        >
+                            {trimText(lastMessage?.text)}
+                        </Text>
+                    }
             </Stack>
         </Flex>
     );
