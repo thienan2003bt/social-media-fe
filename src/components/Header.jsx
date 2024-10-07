@@ -8,13 +8,14 @@ import LogoutButton from './LogoutButton';
 import authScreenAtom from '../atoms/authAtom';
 import { BsFillChatQuoteFill } from 'react-icons/bs';
 
-function Header() {
+function Header({ isFullScreen }) {
     const {colorMode, toggleColorMode} = useColorMode();
     const user = useRecoilValue(userAtom);
 
     const setAuthScreen = useSetRecoilState(authScreenAtom);
     return (
-        <Flex className='component-header' justifyContent={"space-between"} w="48vw" mt={"6"} mb={"12"}>
+        <Flex className='component-header' justifyContent={"space-between"} 
+        w={isFullScreen === true ? "64vw" : "48vw"} mt={"6"} mb={"12"}>
             
             {user.username
             ? <Link as={RouterLink} to={"/"}>

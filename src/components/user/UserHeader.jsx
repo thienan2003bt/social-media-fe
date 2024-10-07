@@ -7,14 +7,14 @@ import { useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import {Link as RouterLink} from 'react-router-dom';
 import useShowToast from "../../hooks/useShowToast";
+import useToggleFollow from "../../hooks/useToggleFollow";
 
 function UserHeader({ userData }) {
     const showToast = useShowToast();
     const [user, setUser] = useState(userData);
     const currentUser = useRecoilValue(userAtom);
-    const [isFollowing, setIsFollowing] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
+    const {handleFollowing, isLoading, isFollowing} = useToggleFollow(userData);
 
     const copyURL = () => {
         const currentURL = window.location.href;
@@ -24,49 +24,9 @@ function UserHeader({ userData }) {
         });
     };
 
-    const handleFollowing = async () => {
-        if(!currentUser) {
-            return showToast("Authentication error", "Please login first to follow another user", 'error');
-        }
-        setIsLoading(true);
-        
-        try {
-            const response = await fetch(`http://localhost:5000/users/follow/${user?._id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include"
-            })
-
-            const data = await response.json();
-            if(data.message?.includes("successfully") === true) {
-                if(isFollowing === true) {
-                    user.followers.pop();
-                } else {
-                    user.followers.push(currentUser?._id);
-                }
-                showToast("Follow user", data.message, "success");
-                setIsFollowing(!isFollowing);
-            } else {
-                showToast("Error following user", data.message, "success");
-            }
-
-        } catch (error) {
-            showToast("Error handling following user", error.message, "error");
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
     useEffect(() => {
         setUser(userData);
     }, [userData])
-
-    useEffect(() => {
-        setIsFollowing(user?.followers?.includes(currentUser?._id) ?? false);
-    }, [user, currentUser])
-
     
     return (
         <VStack gap={4} alignItems={"start"}>

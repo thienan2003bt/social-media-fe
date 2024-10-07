@@ -1,9 +1,10 @@
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import FeedPost from "../components/post/FeedPost";
 import { useRecoilState } from "recoil";
 import postAtom from "../atoms/postAtom";
+import SuggestedUsersTab from "../components/SuggestedUsersTab";
 
 function HomePage() {
     const showToast = useShowToast();
@@ -40,22 +41,29 @@ function HomePage() {
 
 
     return (
-        <div>
-            {isLoading === true && <Flex justify={"center"}>
-                <Spinner size={"xl"}/>
-            </Flex>}
+        <Flex gap={10}>
+            <Box flex={70}>
+                {isLoading === true && <Flex justify={"center"}>
+                    <Spinner size={"xl"}/>
+                </Flex>}
 
-            {isLoading === false && posts?.length === 0 &&
-                <h1>Follow some users to see some exciting threads!</h1>
-            }
+                {isLoading === false && posts?.length === 0 &&
+                    <h1>Follow some users to see some exciting threads!</h1>
+                }
 
-            {isLoading === false && posts?.length > 0 && 
-                posts?.map((post, index) => {
-                    console.log("Feed post: " + index);
-                    return <FeedPost key={`feedpost-${index}`} postedBy={post?.postedBy} post={post}/>
-                })
-            }
-        </div>
+                {isLoading === false && posts?.length > 0 && 
+                    posts?.map((post, index) => {
+                        console.log("Feed post: " + index);
+                        return <FeedPost key={`feedpost-${index}`} postedBy={post?.postedBy} post={post}/>
+                    })
+                }
+            </Box>
+
+            <Box flex={30} border={"1px solid red"} alignItems={"flex-start"}
+            display={{base: "none", md: "block"}}>
+                <SuggestedUsersTab />
+            </Box>
+        </Flex>
     );
 }
 
