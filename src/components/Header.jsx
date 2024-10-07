@@ -7,6 +7,7 @@ import { RxAvatar } from 'react-icons/rx';
 import LogoutButton from './LogoutButton';
 import authScreenAtom from '../atoms/authAtom';
 import { BsFillChatQuoteFill } from 'react-icons/bs';
+import { MdOutlineSettings } from 'react-icons/md';
 
 function Header({ isFullScreen }) {
     const {colorMode, toggleColorMode} = useColorMode();
@@ -39,6 +40,9 @@ function Header({ isFullScreen }) {
 
                 <Link as={RouterLink} to={`/chat`}>
                     <BsFillChatQuoteFill size={20}/>
+                </Link>
+                <Link as={RouterLink} to={`/settings`}>
+                    <MdOutlineSettings size={20}/>
                 </Link>
                 <LogoutButton />
             </Flex>

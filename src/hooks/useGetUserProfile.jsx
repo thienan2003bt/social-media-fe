@@ -18,6 +18,9 @@ function useGetUserProfile() {
                 if(data.error) {
                     return showToast("Error getting user's profile", data.error, "error");
                 }
+                if(data.data.isFrozen === true) {
+                    return setUser({});
+                }
                 setUser(data.data);
             } catch (error) {
                 showToast("Error getting user's profile", error.message, "error");

@@ -40,7 +40,12 @@ function UserPage() {
             }
         }
         getPosts();
-    }, [username])
+    }, [username, user])
+
+
+    if(isLoading === false && !user._id) {
+        return <h1>This user&apos;s account has been frozen.</h1>
+    }
     return (
         <>
             {!user && <h1>User not found.</h1>}
