@@ -1,10 +1,12 @@
-import { StrictMode } from 'react'
+// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react'
 import {mode} from '@chakra-ui/theme-tools';
 import { BrowserRouter } from 'react-router-dom'
+import { RecoilRoot } from 'recoil'
+import SocketContextProvider from './context/socketContext.jsx';
 
 const styles = {
 	global: (props) => ({
@@ -30,12 +32,17 @@ const colors = {
 const theme = extendTheme({ config, styles, colors });
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+//   <StrictMode>
 	<BrowserRouter>
 		<ChakraProvider theme={theme}>
 			<ColorModeScript initialColorMode={theme.config.initialColorMode}/>
-			<App />	
+			<RecoilRoot>
+				<SocketContextProvider>
+					<App />	
+				</SocketContextProvider>
+			</RecoilRoot>
+
 		</ChakraProvider>
 	</BrowserRouter>
-  </StrictMode>,
+//   </StrictMode>,
 )
